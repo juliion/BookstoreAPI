@@ -66,10 +66,12 @@ public class AuthenticationService : IAuthenticationService
         if (refreshToken == null || refreshToken.Expires < DateTime.UtcNow)
             throw new SecurityTokenException("Unknown or invalid refresh token.");
 
-        var newRefreshToken = _tokenService.GenerateRefreshToken();
-        refreshToken.Token = newRefreshToken.Token;
-        refreshToken.Expires = newRefreshToken.Expires;
 
+        var newRefreshToken = _tokenService.GenerateRefreshToken();
+        newRefreshToken.UserId = refreshToken.UserId;
+
+        _context.UserRefreshTokens.Remove(refreshToken);
+        _context.UserRefreshTokens.Add(newRefreshToken);
         await _context.SaveChangesAsync(cancellationToken);
 
         var user = await _userManager.FindByIdAsync(refreshToken.UserId.ToString());
