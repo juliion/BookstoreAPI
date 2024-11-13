@@ -1,5 +1,6 @@
 ﻿using Bookstore.Application.Auth.Commands.Login;
 using Bookstore.Application.Auth.Commands.Logout;
+using Bookstore.Application.Auth.Commands.RefreshToken;
 using Bookstore.Application.Auth.Commands.Register;
 using Bookstore.Application.Auth.Common;
 using Bookstore.Application.Common.Exceptions;
@@ -58,22 +59,20 @@ public class AuthenticationService : IAuthenticationService
         return await GenerateAuthenticationResultForUser(user, cancellationToken);
     }
 
-    public async Task<AuthResponse> RefreshToken(string token, CancellationToken cancellationToken)
+    public async Task<AuthResponse> RefreshToken(RefreshTokenCommand token, CancellationToken cancellationToken)
     {
         var refreshToken = await _context.UserRefreshTokens
-            .FirstOrDefaultAsync(refresh => refresh.Token == token);
-
-        if (refreshToken == null || refreshToken.IsRevoked || refreshToken.Expires < DateTime.UtcNow)
+            .FirstOrDefaultAsync(refresh => refresh.Token == token.RefreshToken);
+        if (refreshToken == null || refreshToken.Expires < DateTime.UtcNow)
             throw new SecurityTokenException("Unknown or invalid refresh token.");
 
-        refreshToken.IsRevoked = true;
-        var user = await _userManager.FindByIdAsync(refreshToken.UserId.ToString());
         var newRefreshToken = _tokenService.GenerateRefreshToken();
-        newRefreshToken.UserId = user.Id;
-        
-        _context.UserRefreshTokens.Add(newRefreshToken);
+        refreshToken.Token = newRefreshToken.Token;
+        refreshToken.Expires = newRefreshToken.Expires;
+
         await _context.SaveChangesAsync(cancellationToken);
 
+        var user = await _userManager.FindByIdAsync(refreshToken.UserId.ToString());
         var accessToken = _tokenService.GenerateAccessToken(user);
 
         return new AuthResponse
@@ -82,16 +81,19 @@ public class AuthenticationService : IAuthenticationService
             RefreshToken = newRefreshToken.Token,
         };
     }
-    public async Task RevokeToken(string token, CancellationToken cancellationToken)
+    public async Task Logout(LogoutCommand token, CancellationToken cancellationToken)
     {
         var refreshToken = await _context.UserRefreshTokens
-            .FirstOrDefaultAsync(refresh => refresh.Token == token);
-
-        if (refreshToken == null || refreshToken.IsRevoked)
+            .FirstOrDefaultAsync(refresh => refresh.Token == token.RefreshToken);
+        
+        if (refreshToken == null)
             throw new SecurityTokenException("Invalid refresh token.");
+        if(refreshToken.UserId != token.UserId)
+        {
+            throw new UnauthorizedException();
+        }
 
-        refreshToken.IsRevoked = true;
-
+        _context.UserRefreshTokens.Remove(refreshToken);
         await _context.SaveChangesAsync(cancellationToken);
     }
 

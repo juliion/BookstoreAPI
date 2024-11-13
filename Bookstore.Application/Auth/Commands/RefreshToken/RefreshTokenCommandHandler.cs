@@ -16,6 +16,6 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, A
     public async Task<AuthResponse> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
     {
 
-        return await _authenticationService.RefreshToken(request.RefreshToken, cancellationToken);
+        return await _authenticationService.RefreshToken(request, cancellationToken);
     }
 }

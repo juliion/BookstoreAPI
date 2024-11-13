@@ -4,12 +4,13 @@ using Bookstore.Application.Auth.Commands.Logout;
 using Bookstore.Application.Auth.Commands.RefreshToken;
 using Bookstore.Application.Auth.Commands.Register;
 using BookstoreAPI.Models;
-using Microsoft.AspNetCore.Identity.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Net;
 
 namespace BookstoreAPI.Controllers;
 
+
+[Route("api/[controller]")]
 public class AuthController : BaseController
 {
     private readonly IMapper _mapper;
@@ -37,17 +38,19 @@ public class AuthController : BaseController
     }
 
     [HttpPost("RefreshToken")]
-    public async Task<IActionResult> RefreshToken(string refreshToken)
+    public async Task<IActionResult> RefreshToken(TokenRequestModel tokenRequest)
     {
-        var command = new RefreshTokenCommand{ RefreshToken = refreshToken };
+        var command = _mapper.Map<RefreshTokenCommand>(tokenRequest);
         var authResponse = await Mediator.Send(command);
         return Ok(authResponse);
     }
 
+    [Authorize]
     [HttpPost("Logout")]
-    public async Task<IActionResult> Logout(string refreshToken)
+    public async Task<IActionResult> Logout(TokenRequestModel tokenRequest)
     {
-        var command = new LogoutCommand { RefreshToken = refreshToken };
+        var command = _mapper.Map<LogoutCommand>(tokenRequest);
+        command.UserId = UserId;
         var authResponse = await Mediator.Send(command);
         return Ok(authResponse);
     }
