@@ -5,6 +5,7 @@ using Bookstore.Application.Auth.Commands.Register;
 using Bookstore.Application.Auth.Common;
 using Bookstore.Application.Common.Exceptions;
 using Bookstore.Application.Interfaces;
+using Bookstore.Domain.Constants;
 using Bookstore.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -44,6 +45,8 @@ public class AuthenticationService : IAuthenticationService
             throw new Exception($"User creation failed: {string.Join(", ", result.Errors.Select(e => e.Description))}");
         }
 
+        await _userManager.AddToRoleAsync(user, Roles.User);
+
         return await GenerateAuthenticationResultForUser(user, cancellationToken);
     }
 
@@ -75,7 +78,7 @@ public class AuthenticationService : IAuthenticationService
         await _context.SaveChangesAsync(cancellationToken);
 
         var user = await _userManager.FindByIdAsync(refreshToken.UserId.ToString());
-        var accessToken = _tokenService.GenerateAccessToken(user);
+        var accessToken = await _tokenService.GenerateAccessToken(user);
 
         return new AuthResponse
         {
@@ -101,7 +104,7 @@ public class AuthenticationService : IAuthenticationService
 
     private async Task<AuthResponse> GenerateAuthenticationResultForUser(User user, CancellationToken cancellationToken)
     {
-        var accessToken = _tokenService.GenerateAccessToken(user);
+        var accessToken = await _tokenService.GenerateAccessToken(user);
         var refreshToken = _tokenService.GenerateRefreshToken();
         refreshToken.UserId = user.Id;
 

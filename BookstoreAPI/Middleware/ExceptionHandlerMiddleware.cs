@@ -42,6 +42,12 @@ public class ExceptionHandlerMiddleware
             case SecurityTokenException:
                 code = HttpStatusCode.Forbidden;
                 break;
+            case NotFoundException:
+                code = HttpStatusCode.NotFound;
+                break;
+            case ConflictException:
+                code = HttpStatusCode.Conflict;
+                break;
         }
         context.Response.ContentType = "application/json";
         context.Response.StatusCode = (int)code;
