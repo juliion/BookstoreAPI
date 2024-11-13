@@ -26,11 +26,14 @@ public class TokenService
 
         var claims = new List<Claim>
         {
-            new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-            new Claim(JwtRegisteredClaimNames.Email, user.Email)
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new Claim(JwtRegisteredClaimNames.Email, user.Email),
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
         };
 
         var token = new JwtSecurityToken(
+            issuer: _jwtSettings.Issuer,
+            audience: _jwtSettings.Audience,
             claims: claims,
             expires: DateTime.Now.AddMinutes(_jwtSettings.AccessTokenExpirationMinutes),
             signingCredentials: creds);
@@ -48,7 +51,7 @@ public class TokenService
             {
                 Token = Convert.ToBase64String(randomBytes),
                 Expires = DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpirationDays)
-        };
+            };
         }
     }
 }
