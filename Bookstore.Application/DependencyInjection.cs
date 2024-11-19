@@ -2,7 +2,7 @@
 using MediatR;
 using System.Reflection;
 using FluentValidation;
-using Bookstore.Application.Behaviors;
+using Bookstore.Application.Common.Behaviors;
 
 namespace Bookstore.Application;
 
