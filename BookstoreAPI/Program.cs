@@ -3,6 +3,7 @@ using Bookstore.Application;
 using Bookstore.Infrastructure.Persistence;
 using BookstoreAPI.Middleware;
 using BookstoreAPI.Mappings;
+using Bookstore.Application.Common.Mappings;
 
 namespace BookstoreAPI;
 
@@ -16,7 +17,8 @@ public class Program
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
 
-        builder.Services.AddAutoMapper(typeof(ApiMappingProfile));
+        builder.Services.AddAutoMapper(typeof(ApiMappingProfile), typeof(ApplicationMappingProfile));
+       
         builder.Services.AddApplication();
         builder.Services.AddInfrastructure(builder.Configuration);
         builder.Services.AddCors(options =>

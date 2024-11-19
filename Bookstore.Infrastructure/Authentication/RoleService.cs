@@ -31,7 +31,7 @@ public class RoleService : IRoleService
     {
         var role = await _roleManager.FindByNameAsync(roleName);
         if (role == null)
-            throw new NotFoundException($"Role '{roleName}' does not exist.");
+            throw new NotFoundException(nameof(Role), roleName);
 
         var result = await _roleManager.DeleteAsync(role);
 
@@ -43,11 +43,11 @@ public class RoleService : IRoleService
     {
         var user = await _userManager.FindByIdAsync(userId.ToString());
         if (user == null)
-            throw new NotFoundException("User not found.");
+            throw new NotFoundException(nameof(User), userId);
 
         if (!await _roleManager.RoleExistsAsync(roleName))
-            throw new NotFoundException($"Role '{roleName}' does not exist.");
-
+            throw new NotFoundException(nameof(Role), roleName);
+        
         var result = await _userManager.AddToRoleAsync(user, roleName);
 
         if (!result.Succeeded)
@@ -58,10 +58,10 @@ public class RoleService : IRoleService
     {
         var user = await _userManager.FindByIdAsync(userId.ToString());
         if (user == null)
-            throw new NotFoundException("User not found.");
+            throw new NotFoundException(nameof(User), userId);
 
         if (!await _roleManager.RoleExistsAsync(roleName))
-            throw new NotFoundException($"Role '{roleName}' does not exist.");
+            throw new NotFoundException(nameof(Role), roleName);
 
         var result = await _userManager.RemoveFromRoleAsync(user, roleName);
 

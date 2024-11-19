@@ -3,7 +3,7 @@ using Bookstore.Application.Auth.Commands.Login;
 using Bookstore.Application.Auth.Commands.Logout;
 using Bookstore.Application.Auth.Commands.RefreshToken;
 using Bookstore.Application.Auth.Commands.Register;
-using BookstoreAPI.Models;
+using BookstoreAPI.Models.Auth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

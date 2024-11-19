@@ -1,4 +1,4 @@
-﻿namespace BookstoreAPI.Models;
+﻿namespace BookstoreAPI.Models.Auth;
 
 public class RegisterRequestModel
 {

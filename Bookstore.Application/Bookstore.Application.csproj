@@ -11,10 +11,26 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="13.0.1" />
     <PackageReference Include="FluentValidation" Version="11.10.0" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.10.0" />
     <PackageReference Include="MediatR" Version="11.1.0" />
     <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="11.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Books\Commands\CreateBook\" />
+    <Folder Include="Books\Commands\DeleteBook\" />
+    <Folder Include="Books\Commands\UpdateBook\" />
+    <Folder Include="Books\Queries\GetBookDetails\" />
+    <Folder Include="Books\Queries\GetBooks\" />
+    <Folder Include="Categories\Commands\CreateCategory\" />
+    <Folder Include="Categories\Commands\DeleteCategory\" />
+    <Folder Include="Categories\Queries\GetCategories\" />
+    <Folder Include="Publishers\Commands\CreatePublisher\" />
+    <Folder Include="Publishers\Commands\DeletePublisher\" />
+    <Folder Include="Publishers\Queries\GetPublishers\" />
+    <Folder Include="Publishers\Queries\GetPublisherDetails\" />
   </ItemGroup>
 
 </Project>
